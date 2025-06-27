@@ -32,7 +32,7 @@ public class CoversController : ControllerBase
     {
         var results = await _coverService.GetCoverAsync();
 
-        return results is null ? NoContent() : Ok(results);
+        return results.Any() ? Ok(results) : NoContent();
     }
 
     [HttpGet("{id}")]

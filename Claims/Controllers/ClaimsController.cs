@@ -25,7 +25,7 @@ public class ClaimsController : ControllerBase
     {
         var result = await _claimsService.GetClaimsAsync();
 
-        return result is null ? NoContent() : Ok(result);
+        return result.Any() ? Ok(result) : NoContent();
     }
 
     [HttpPost]
