@@ -49,6 +49,8 @@ builder.Services.AddSwaggerGen();
 
 // Register services
 builder.Services.AddScoped<IAuditer, Auditer>();
+builder.Services.AddScoped<IClaimsService, ClaimsService>();
+builder.Services.AddScoped<ICoverService, CoverService>();
 
 var app = builder.Build();
 

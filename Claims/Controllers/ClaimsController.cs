@@ -1,4 +1,3 @@
-using Claims.Persistance;
 using Claims.Models;
 using Microsoft.AspNetCore.Mvc;
 using Claims.Services.Interfaces;
@@ -11,27 +10,29 @@ namespace Claims.Controllers;
 public class ClaimsController : ControllerBase
 {
     private readonly ILogger<ClaimsController> _logger;
-    private readonly ClaimsContext _claimsContext;
     private readonly IAuditer _auditer;
+    private readonly IClaimsService _claimsService;
 
-    public ClaimsController(ILogger<ClaimsController> logger, ClaimsContext claimsContext, IAuditer auditer)
+    public ClaimsController(ILogger<ClaimsController> logger, IAuditer auditer, IClaimsService claimsService)
     {
         _logger = logger;
-        _claimsContext = claimsContext;
         _auditer = auditer;
+        _claimsService = claimsService;
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Claim>> GetAsync()
+    public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
     {
-        return await _claimsContext.GetClaimsAsync();
+        var result = await _claimsService.GetClaimsAsync();
+
+        return result is null ? NoContent() : Ok(result);
     }
 
     [HttpPost]
     public async Task<ActionResult> CreateAsync(Claim claim)
     {
         claim.Id = Guid.NewGuid().ToString();
-        await _claimsContext.AddItemAsync(claim);
+        await _claimsService.AddItemAsync(claim);
         await _auditer.AuditClaim(claim.Id, "POST");
         return Ok(claim);
     }
@@ -40,12 +41,14 @@ public class ClaimsController : ControllerBase
     public async Task DeleteAsync(string id)
     {
         await _auditer.AuditClaim(id, "DELETE");
-        await _claimsContext.DeleteItemAsync(id);
+        await _claimsService.DeleteItemAsync(id);
     }
 
     [HttpGet("{id:required}")]
-    public async Task<Claim> GetAsync(string id)
+    public async Task<IActionResult> GetAsync(string id)
     {
-        return await _claimsContext.GetClaimAsync(id);
+        var result = await _claimsService.GetClaimAsync(id);
+
+        return result is null ? NoContent() : Ok(result);
     }
 }

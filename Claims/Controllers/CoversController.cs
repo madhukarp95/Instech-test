@@ -1,7 +1,5 @@
-using Claims.Persistance;
 using Claims.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Claims.Domain;
 using Claims.Services.Interfaces;
 
@@ -11,13 +9,13 @@ namespace Claims.Controllers;
 [Route("[controller]")]
 public class CoversController : ControllerBase
 {
-    private readonly ClaimsContext _claimsContext;
+    private readonly ICoverService _coverService;
     private readonly ILogger<CoversController> _logger;
     private readonly IAuditer _auditer;
 
-    public CoversController(ClaimsContext claimsContext, IAuditer auditer, ILogger<CoversController> logger)
+    public CoversController(ICoverService coverService, IAuditer auditer, ILogger<CoversController> logger)
     {
-        _claimsContext = claimsContext;
+        _coverService = coverService;
         _logger = logger;
         _auditer = auditer;
     }
@@ -32,7 +30,7 @@ public class CoversController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
     {
-        var results = await _claimsContext.Covers.ToListAsync();
+        var results = await _coverService.GetCoverAsync();
 
         return results is null ? NoContent() : Ok(results);
     }
@@ -40,9 +38,9 @@ public class CoversController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Cover>> GetAsync(string id)
     {
-        Cover? coverResponse = await _claimsContext.Covers.SingleOrDefaultAsync(cover => cover.Id == id);
+        Cover? coverResponse = await _coverService.GetCoverAsync(id);
 
-        return coverResponse is null ? NotFound($"Cover with ID {id} not found.") : Ok(coverResponse);
+        return coverResponse is null ? NoContent() : Ok(coverResponse);
 
     }
 
@@ -52,9 +50,8 @@ public class CoversController : ControllerBase
         cover.Id = Guid.NewGuid().ToString();
         cover.Premium = PremiumCalculator.ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
 
-        _claimsContext.Covers.Add(cover);
+        await _coverService.AddItemAsync(cover);
 
-        await _claimsContext.SaveChangesAsync();
         await _auditer.AuditCover(cover.Id, "POST");
 
         return Ok(cover);
@@ -66,12 +63,11 @@ public class CoversController : ControllerBase
         await _auditer.AuditCover(id, "DELETE");
 
         // Find the cover by ID and remove it if it exists
-        var cover = await _claimsContext.Covers.SingleOrDefaultAsync(cover => cover.Id == id);
+        var cover = await _coverService.GetCoverAsync(id);
 
         if (cover is not null)
         {
-            _claimsContext.Covers.Remove(cover);
-            await _claimsContext.SaveChangesAsync();
+            await _coverService.DeleteItemAsync(id);
         }
     }
 }
