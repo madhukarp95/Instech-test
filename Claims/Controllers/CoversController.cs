@@ -1,9 +1,9 @@
-using Claims.Auditing;
 using Claims.Persistance;
 using Claims.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Claims.Domain;
+using Claims.Services.Interfaces;
 
 namespace Claims.Controllers;
 
@@ -13,33 +13,37 @@ public class CoversController : ControllerBase
 {
     private readonly ClaimsContext _claimsContext;
     private readonly ILogger<CoversController> _logger;
-    private readonly Auditer _auditer;
+    private readonly IAuditer _auditer;
 
-    public CoversController(ClaimsContext claimsContext, AuditContext auditContext, ILogger<CoversController> logger)
+    public CoversController(ClaimsContext claimsContext, IAuditer auditer, ILogger<CoversController> logger)
     {
         _claimsContext = claimsContext;
         _logger = logger;
-        _auditer = new Auditer(auditContext);
+        _auditer = auditer;
     }
 
     [HttpPost("compute")]
     public async Task<ActionResult> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
     {
-        return Ok(PremiumCalculator.ComputePremium(startDate, endDate, coverType));
+        decimal totalPremium = await Task.Run(() => PremiumCalculator.ComputePremium(startDate, endDate, coverType));
+        return Ok(totalPremium);
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
     {
         var results = await _claimsContext.Covers.ToListAsync();
-        return Ok(results);
+
+        return results is null ? NoContent() : Ok(results);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Cover>> GetAsync(string id)
     {
-        var results = await _claimsContext.Covers.ToListAsync();
-        return Ok(results.SingleOrDefault(cover => cover.Id == id));
+        Cover? coverResponse = await _claimsContext.Covers.SingleOrDefaultAsync(cover => cover.Id == id);
+
+        return coverResponse is null ? NotFound($"Cover with ID {id} not found.") : Ok(coverResponse);
+
     }
 
     [HttpPost]
@@ -47,17 +51,23 @@ public class CoversController : ControllerBase
     {
         cover.Id = Guid.NewGuid().ToString();
         cover.Premium = PremiumCalculator.ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
+
         _claimsContext.Covers.Add(cover);
+
         await _claimsContext.SaveChangesAsync();
-        _auditer.AuditCover(cover.Id, "POST");
+        await _auditer.AuditCover(cover.Id, "POST");
+
         return Ok(cover);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:required}")]
     public async Task DeleteAsync(string id)
     {
-        _auditer.AuditCover(id, "DELETE");
-        var cover = await _claimsContext.Covers.Where(cover => cover.Id == id).SingleOrDefaultAsync();
+        await _auditer.AuditCover(id, "DELETE");
+
+        // Find the cover by ID and remove it if it exists
+        var cover = await _claimsContext.Covers.SingleOrDefaultAsync(cover => cover.Id == id);
+
         if (cover is not null)
         {
             _claimsContext.Covers.Remove(cover);
