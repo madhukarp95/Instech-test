@@ -1,4 +1,6 @@
-﻿using Claims.Models;
+﻿using Claims.Domain;
+using Claims.Models;
+using Claims.Models.DTO;
 using Claims.Persistance;
 using Claims.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +16,24 @@ namespace Claims.Services
             _claimsContext = claimsContext;
         }
 
-        public async Task AddItemAsync(Cover item)
+        public async Task<Cover> AddItemAsync(CoverDto coverDto)
         {
-            await _claimsContext.Covers.AddAsync(item);
+            decimal Premium = await Task.Run(() =>
+                PremiumCalculator.ComputePremium(coverDto.StartDate!.Value, coverDto.EndDate!.Value, coverDto.Type));
+
+            Cover cover = new()
+            {
+                Id = Guid.NewGuid().ToString(),
+                StartDate = coverDto.StartDate!.Value,
+                EndDate = coverDto.EndDate!.Value,
+                Type = coverDto.Type,
+                Premium = Premium
+            };
+
+            await _claimsContext.Covers.AddAsync(cover);
             await _claimsContext.SaveChangesAsync();
+
+            return cover;
         }
 
         public async Task DeleteItemAsync(string id)
