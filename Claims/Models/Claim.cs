@@ -6,17 +6,17 @@ namespace Claims.Models
     public class Claim
     {
         [BsonId]
-        public string Id { get; set; }
+        public required string Id { get; set; }
 
         [BsonElement("coverId")]
-        public string CoverId { get; set; }
+        public required string CoverId { get; set; }
 
         [BsonElement("created")]
-        [BsonDateTimeOptions(DateOnly = true)]
-        public DateTime Created { get; set; }
+        //[BsonDateTimeOptions(DateOnly = true)]
+        public DateOnly Created { get; set; }
 
         [BsonElement("name")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [BsonElement("claimType")]
         public ClaimType Type { get; set; }

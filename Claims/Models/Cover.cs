@@ -5,15 +5,15 @@ namespace Claims.Models;
 public class Cover
 {
     [BsonId]
-    public string Id { get; set; }
+    public required string Id { get; set; }
 
     [BsonElement("startDate")]
-    [BsonDateTimeOptions(DateOnly = true)]
-    public DateTime StartDate { get; set; }
+    //[BsonDateTimeOptions(DateOnly = true)]
+    public DateOnly StartDate { get; set; }
 
     [BsonElement("endDate")]
-    [BsonDateTimeOptions(DateOnly = true)]
-    public DateTime EndDate { get; set; }
+    //[BsonDateTimeOptions(DateOnly = true)]
+    public DateOnly EndDate { get; set; }
 
     [BsonElement("claimType")]
     public CoverType Type { get; set; }
