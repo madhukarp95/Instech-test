@@ -13,6 +13,7 @@ namespace Claims.Services
             _auditContext = auditContext;
         }
 
+        // </inheritdoc>
         public async Task AuditClaim(string id, string httpRequestType)
         {
             var claimAudit = new ClaimAudit()
@@ -26,6 +27,7 @@ namespace Claims.Services
             await _auditContext.SaveChangesAsync();
         }
 
+        // </inheritdoc>
         public async Task AuditCover(string id, string httpRequestType)
         {
             var coverAudit = new CoverAudit()
