@@ -12,13 +12,13 @@ public class CoversController : ControllerBase
 {
     private readonly ICoverService _coverService;
     private readonly ILogger<CoversController> _logger;
-    private readonly IAuditer _auditer;
+    private readonly IChannel _channel;
 
-    public CoversController(ICoverService coverService, IAuditer auditer, ILogger<CoversController> logger)
+    public CoversController(ICoverService coverService, IChannel channel, ILogger<CoversController> logger)
     {
         _coverService = coverService;
         _logger = logger;
-        _auditer = auditer;
+        _channel = channel;
     }
 
     [HttpPost("compute")]
@@ -51,7 +51,7 @@ public class CoversController : ControllerBase
     {
         var cover = await _coverService.AddItemAsync(coverDto);
 
-        await _auditer.AuditCover(cover.Id, "POST");
+        await _channel.EnqueueAsync(new ChannelRequest(cover.Id, "POST", "COVER"));
 
         return Ok(cover);
     }
@@ -59,15 +59,7 @@ public class CoversController : ControllerBase
     [HttpDelete("{id:required}")]
     public async Task<IActionResult> DeleteAsync(string id)
     {
-        await _auditer.AuditCover(id, "DELETE");
-
-        // Find the cover by ID and remove it if it exists
-        var cover = await _coverService.GetCoverAsync(id);
-
-        if (cover is null)
-        {
-            return NotFound();
-        }
+        await _channel.EnqueueAsync(new ChannelRequest(id, "DELETE", "COVER"));
 
         await _coverService.DeleteItemAsync(id);
         return NoContent();

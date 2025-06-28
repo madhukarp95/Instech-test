@@ -1,7 +1,7 @@
 using Claims.Models;
-using Microsoft.AspNetCore.Mvc;
-using Claims.Services.Interfaces;
 using Claims.Models.DTO;
+using Claims.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace Claims.Controllers;
@@ -11,16 +11,17 @@ namespace Claims.Controllers;
 public class ClaimsController : ControllerBase
 {
     private readonly ILogger<ClaimsController> _logger;
-    private readonly IAuditer _auditer;
     private readonly IClaimsService _claimsService;
     private readonly ICoverService _coverService;
+    private readonly IChannel _channel;
 
-    public ClaimsController(ILogger<ClaimsController> logger, IAuditer auditer, IClaimsService claimsService, ICoverService coverService)
+    public ClaimsController(ILogger<ClaimsController> logger, IClaimsService claimsService,
+        ICoverService coverService, IChannel channel)
     {
         _logger = logger;
-        _auditer = auditer;
         _claimsService = claimsService;
         _coverService = coverService;
+        _channel = channel;
     }
 
     [HttpGet]
@@ -36,7 +37,7 @@ public class ClaimsController : ControllerBase
     {
         Cover? cover = await _coverService.GetCoverAsync(claimDto.CoverId);
 
-        if(cover is null)
+        if (cover is null)
         {
             _logger.LogWarning("Cover with ID {CoverId} not found.", claimDto.CoverId);
 
@@ -48,7 +49,7 @@ public class ClaimsController : ControllerBase
         if (isValidClaim)
         {
             var claim = await _claimsService.AddItemAsync(claimDto);
-            await _auditer.AuditClaim(claim.Id, "POST");
+            await _channel.EnqueueAsync(new ChannelRequest(claim.Id, "POST", "CLAIM"));
 
             return Ok(claim);
         }
@@ -59,7 +60,7 @@ public class ClaimsController : ControllerBase
     [HttpDelete("{id:required}")]
     public async Task DeleteAsync(string id)
     {
-        await _auditer.AuditClaim(id, "DELETE");
+        await _channel.EnqueueAsync(new ChannelRequest(id, "DELETE", "CLAIM"));
         await _claimsService.DeleteItemAsync(id);
     }
 

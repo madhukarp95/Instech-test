@@ -1,6 +1,5 @@
+using Claims.Extensions;
 using Claims.Persistance;
-using Claims.Services;
-using Claims.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using System.Runtime.InteropServices;
@@ -26,8 +25,7 @@ await sqlContainer.StartAsync();
 await mongoContainer.StartAsync();
 
 // Add services to the container.
-builder.Services
-    .AddControllers()
+builder.Services.AddControllers()
     .AddJsonOptions(x =>
     {
         x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -47,10 +45,7 @@ builder.Services.AddDbContext<ClaimsContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register services
-builder.Services.AddScoped<IAuditer, Auditer>();
-builder.Services.AddScoped<IClaimsService, ClaimsService>();
-builder.Services.AddScoped<ICoverService, CoverService>();
+builder.Services.ConfigureDependentServices();
 
 var app = builder.Build();
 
@@ -71,6 +66,11 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AuditContext>();
     context.Database.Migrate();
+
+    if (context.Database.GetPendingMigrations().Count() > 0)
+    {
+        context.Database.Migrate();
+    }
 }
 
 app.Run();
