@@ -11,7 +11,7 @@ public static class PremiumCalculator
     /// <param name="endDate">The end date of the coverage</param>
     /// <param name="coverType">Type of Cover</param>
     /// <returns>The total premium amount based on duration and cover type</returns>
-    public static decimal ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType)
+    public static decimal ComputePremium(DateOnly startDate, DateOnly endDate, CoverType coverType)
     {
         const decimal baseDayRate = 1250m;
 
@@ -23,7 +23,7 @@ public static class PremiumCalculator
             _ => 1.30m
         };
 
-        int totalDays = (int)(endDate - startDate).TotalDays + 1;
+        int totalDays = endDate.DayNumber - startDate.DayNumber;
 
         int first30Days = Math.Min(30, totalDays);
         int next150Days = Math.Min(150, Math.Max(0, totalDays - 30));

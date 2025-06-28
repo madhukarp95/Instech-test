@@ -2,6 +2,7 @@ using Claims.Models;
 using Microsoft.AspNetCore.Mvc;
 using Claims.Domain;
 using Claims.Services.Interfaces;
+using Claims.Models.DTO;
 
 namespace Claims.Controllers;
 
@@ -21,9 +22,11 @@ public class CoversController : ControllerBase
     }
 
     [HttpPost("compute")]
-    public async Task<ActionResult> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
+    public async Task<ActionResult> ComputePremiumAsync(CoverDto coverDto)
     {
-        decimal totalPremium = await Task.Run(() => PremiumCalculator.ComputePremium(startDate, endDate, coverType));
+        decimal totalPremium = await Task.Run(() =>
+            PremiumCalculator.ComputePremium(coverDto.StartDate!.Value, coverDto.EndDate!.Value, coverDto.Type));
+
         return Ok(totalPremium);
     }
 
@@ -35,22 +38,18 @@ public class CoversController : ControllerBase
         return results.Any() ? Ok(results) : NoContent();
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:required}")]
     public async Task<ActionResult<Cover>> GetAsync(string id)
     {
         Cover? coverResponse = await _coverService.GetCoverAsync(id);
 
         return coverResponse is null ? NoContent() : Ok(coverResponse);
-
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(Cover cover)
+    public async Task<ActionResult<CoverDto>> CreateAsync(CoverDto coverDto)
     {
-        cover.Id = Guid.NewGuid().ToString();
-        cover.Premium = PremiumCalculator.ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
-
-        await _coverService.AddItemAsync(cover);
+        var cover = await _coverService.AddItemAsync(coverDto);
 
         await _auditer.AuditCover(cover.Id, "POST");
 
@@ -58,16 +57,19 @@ public class CoversController : ControllerBase
     }
 
     [HttpDelete("{id:required}")]
-    public async Task DeleteAsync(string id)
+    public async Task<IActionResult> DeleteAsync(string id)
     {
         await _auditer.AuditCover(id, "DELETE");
 
         // Find the cover by ID and remove it if it exists
         var cover = await _coverService.GetCoverAsync(id);
 
-        if (cover is not null)
+        if (cover is null)
         {
-            await _coverService.DeleteItemAsync(id);
+            return NotFound();
         }
+
+        await _coverService.DeleteItemAsync(id);
+        return NoContent();
     }
 }

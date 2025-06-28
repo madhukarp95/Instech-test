@@ -1,6 +1,7 @@
 using Claims.Models;
 using Microsoft.AspNetCore.Mvc;
 using Claims.Services.Interfaces;
+using Claims.Models.DTO;
 
 
 namespace Claims.Controllers;
@@ -12,12 +13,14 @@ public class ClaimsController : ControllerBase
     private readonly ILogger<ClaimsController> _logger;
     private readonly IAuditer _auditer;
     private readonly IClaimsService _claimsService;
+    private readonly ICoverService _coverService;
 
-    public ClaimsController(ILogger<ClaimsController> logger, IAuditer auditer, IClaimsService claimsService)
+    public ClaimsController(ILogger<ClaimsController> logger, IAuditer auditer, IClaimsService claimsService, ICoverService coverService)
     {
         _logger = logger;
         _auditer = auditer;
         _claimsService = claimsService;
+        _coverService = coverService;
     }
 
     [HttpGet]
@@ -29,12 +32,28 @@ public class ClaimsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(Claim claim)
+    public async Task<ActionResult> CreateAsync(ClaimDto claimDto)
     {
-        claim.Id = Guid.NewGuid().ToString();
-        await _claimsService.AddItemAsync(claim);
-        await _auditer.AuditClaim(claim.Id, "POST");
-        return Ok(claim);
+        Cover? cover = await _coverService.GetCoverAsync(claimDto.CoverId);
+
+        if(cover is null)
+        {
+            _logger.LogWarning("Cover with ID {CoverId} not found.", claimDto.CoverId);
+
+            return NotFound($"Cover with ID {claimDto.CoverId} not found.");
+        }
+
+        bool isValidClaim = claimDto.Created >= cover.StartDate && claimDto.Created <= cover.EndDate;
+
+        if (isValidClaim)
+        {
+            var claim = await _claimsService.AddItemAsync(claimDto);
+            await _auditer.AuditClaim(claim.Id, "POST");
+
+            return Ok(claim);
+        }
+
+        return BadRequest("Claim date is not within the cover period");
     }
 
     [HttpDelete("{id:required}")]
