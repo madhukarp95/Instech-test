@@ -1,12 +1,15 @@
 ﻿using Claims.Models;
-using Claims.Services.Interfaces;
 using System.Threading.Channels;
 
-namespace Claims.Services;
+namespace Claims.Services.Channels;
 
-public class ChannelQueue : IChannel
+public class ChannelQueue : IChannelQueue
 {
     private readonly Channel<ChannelRequest> _channel;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChannelQueue"/> class.
+    /// </summary>
     public ChannelQueue()
     {
         _channel = Channel.CreateUnbounded<ChannelRequest>(

@@ -1,9 +1,9 @@
 ﻿using Claims.Models;
 using System.Threading.Channels;
 
-namespace Claims.Services.Interfaces;
+namespace Claims.Services.Channels;
 
-public interface IChannel
+public interface IChannelQueue
 {
     /// <summary>
     /// Enqueues an item to the channel asynchronously.

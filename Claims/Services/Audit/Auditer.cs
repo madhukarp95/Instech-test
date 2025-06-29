@@ -1,13 +1,16 @@
 ﻿using Claims.Models.Auditing;
 using Claims.Persistance;
-using Claims.Services.Interfaces;
 
-namespace Claims.Services
+namespace Claims.Services.Audit
 {
     public class Auditer : IAuditer
     {
         private readonly AuditContext _auditContext;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Auditer"/> class.
+        /// </summary>
+        /// <param name="auditContext"></param>
         public Auditer(AuditContext auditContext)
         {
             _auditContext = auditContext;

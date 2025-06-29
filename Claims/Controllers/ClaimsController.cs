@@ -1,6 +1,8 @@
 using Claims.Models;
 using Claims.Models.DTO;
-using Claims.Services.Interfaces;
+using Claims.Services.Claims;
+using Claims.Services.Coverage;
+using Claims.Services.Channels;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -13,10 +15,10 @@ public class ClaimsController : ControllerBase
     private readonly ILogger<ClaimsController> _logger;
     private readonly IClaimsService _claimsService;
     private readonly ICoverService _coverService;
-    private readonly IChannel _channel;
+    private readonly IChannelQueue _channel;
 
     public ClaimsController(ILogger<ClaimsController> logger, IClaimsService claimsService,
-        ICoverService coverService, IChannel channel)
+        ICoverService coverService, IChannelQueue channel)
     {
         _logger = logger;
         _claimsService = claimsService;
@@ -65,7 +67,7 @@ public class ClaimsController : ControllerBase
     }
 
     [HttpGet("{id:required}")]
-    public async Task<IActionResult> GetAsync(string id)
+    public async Task<ActionResult> GetAsync(string id)
     {
         var result = await _claimsService.GetClaimAsync(id);
 

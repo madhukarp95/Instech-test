@@ -1,8 +1,8 @@
 using Claims.Models;
 using Microsoft.AspNetCore.Mvc;
-using Claims.Domain;
-using Claims.Services.Interfaces;
+using Claims.Services.Channels;
 using Claims.Models.DTO;
+using Claims.Services.Coverage;
 
 namespace Claims.Controllers;
 
@@ -12,9 +12,9 @@ public class CoversController : ControllerBase
 {
     private readonly ICoverService _coverService;
     private readonly ILogger<CoversController> _logger;
-    private readonly IChannel _channel;
+    private readonly IChannelQueue _channel;
 
-    public CoversController(ICoverService coverService, IChannel channel, ILogger<CoversController> logger)
+    public CoversController(ICoverService coverService, IChannelQueue channel, ILogger<CoversController> logger)
     {
         _coverService = coverService;
         _logger = logger;
@@ -22,10 +22,9 @@ public class CoversController : ControllerBase
     }
 
     [HttpPost("compute")]
-    public async Task<ActionResult> ComputePremiumAsync(CoverDto coverDto)
+    public ActionResult ComputePremium(CoverDto coverDto)
     {
-        decimal totalPremium = await Task.Run(() =>
-            PremiumCalculator.ComputePremium(coverDto.StartDate!.Value, coverDto.EndDate!.Value, coverDto.Type));
+        decimal totalPremium = _coverService.ComputePremium(coverDto);
 
         return Ok(totalPremium);
     }
@@ -57,7 +56,7 @@ public class CoversController : ControllerBase
     }
 
     [HttpDelete("{id:required}")]
-    public async Task<IActionResult> DeleteAsync(string id)
+    public async Task<ActionResult> DeleteAsync(string id)
     {
         await _channel.EnqueueAsync(new ChannelRequest(id, "DELETE", "COVER"));
 
