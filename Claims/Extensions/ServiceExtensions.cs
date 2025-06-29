@@ -26,6 +26,7 @@ public static class ServiceExtensions
         services.AddScoped<YachtCalculator>();
         services.AddScoped<TankerCalculator>();
         services.AddScoped<PassengerShipCalculator>();
+        services.AddScoped<DefaultCalculator>();
         services.AddScoped<IPremiumCalculatorFactory, PremiumCalculatorFactory>();
     }
 }

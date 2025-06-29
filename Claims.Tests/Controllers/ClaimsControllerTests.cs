@@ -11,9 +11,11 @@ using FluentAssertions;
 using Claims.Models.Channel;
 using Claims.Models.Claim;
 using Claims.Models.Cover;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Claims.Tests;
+namespace Claims.Tests.Controllers;
 
+[ExcludeFromCodeCoverage]
 public class ClaimsControllerTests
 {
     private readonly Mock<ILogger<ClaimsController>> _logger;
