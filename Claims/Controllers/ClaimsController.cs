@@ -10,6 +10,8 @@ namespace Claims.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status204NoContent)]
 public class ClaimsController : ControllerBase
 {
     private readonly ILogger<ClaimsController> _logger;
@@ -32,6 +34,14 @@ public class ClaimsController : ControllerBase
         var result = await _claimsService.GetClaimsAsync();
 
         return result.Any() ? Ok(result) : NoContent();
+    }
+
+    [HttpGet("{id:required}")]
+    public async Task<ActionResult> GetAsync(string id)
+    {
+        var result = await _claimsService.GetClaimAsync(id);
+
+        return result is null ? NoContent() : Ok(result);
     }
 
     [HttpPost]
@@ -64,13 +74,5 @@ public class ClaimsController : ControllerBase
     {
         await _channel.EnqueueAsync(new ChannelRequest(id, "DELETE", "CLAIM"));
         await _claimsService.DeleteItemAsync(id);
-    }
-
-    [HttpGet("{id:required}")]
-    public async Task<ActionResult> GetAsync(string id)
-    {
-        var result = await _claimsService.GetClaimAsync(id);
-
-        return result is null ? NoContent() : Ok(result);
     }
 }

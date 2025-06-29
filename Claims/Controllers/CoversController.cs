@@ -8,6 +8,8 @@ namespace Claims.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status204NoContent)]
 public class CoversController : ControllerBase
 {
     private readonly ICoverService _coverService;
@@ -24,9 +26,17 @@ public class CoversController : ControllerBase
     [HttpPost("compute")]
     public ActionResult ComputePremium(CoverDto coverDto)
     {
-        decimal totalPremium = _coverService.ComputePremium(coverDto);
+        try
+        {
+            decimal totalPremium = _coverService.ComputePremium(coverDto);
 
-        return Ok(totalPremium);
+            return Ok(totalPremium);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred.");
+            return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
+        }
     }
 
     [HttpGet]

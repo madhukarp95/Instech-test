@@ -16,7 +16,7 @@ public static class ServiceExtensions
     public static void ConfigureDependentServices(this IServiceCollection services)
     {
         // Register services
-        services.AddScoped<IAuditer, Auditer>();
+        services.AddScoped<IAuditor, Auditor>();
         services.AddScoped<IClaimsService, ClaimsService>();
         services.AddScoped<ICoverService, CoverService>();
 
