@@ -1,4 +1,5 @@
-﻿using Claims.Models;
+﻿using Claims.Models.Claim;
+using Claims.Models.Cover;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.EntityFrameworkCore.Extensions;
 

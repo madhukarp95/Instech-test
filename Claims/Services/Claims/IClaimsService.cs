@@ -1,4 +1,4 @@
-﻿using Claims.Models;
+﻿using Claims.Models.Claim;
 using Claims.Models.DTO;
 
 namespace Claims.Services.Claims;

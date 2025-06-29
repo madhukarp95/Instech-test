@@ -1,5 +1,4 @@
 ﻿using Claims.Controllers;
-using Claims.Models;
 using Claims.Models.DTO;
 using Claims.Services.Claims;
 using Claims.Services.Coverage;
@@ -9,6 +8,9 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using FluentAssertions;
+using Claims.Models.Channel;
+using Claims.Models.Claim;
+using Claims.Models.Cover;
 
 namespace Claims.Tests;
 

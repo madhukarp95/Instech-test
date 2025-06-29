@@ -1,4 +1,5 @@
 ﻿
+using Claims.Models.Claim;
 using System.ComponentModel.DataAnnotations;
 
 namespace Claims.Models.DTO

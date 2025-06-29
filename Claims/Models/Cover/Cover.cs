@@ -1,6 +1,6 @@
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Claims.Models;
+namespace Claims.Models.Cover;
 
 public class Cover
 {

@@ -1,5 +1,4 @@
 ﻿using Claims.Controllers;
-using Claims.Models;
 using Claims.Models.DTO;
 using Claims.Services.Coverage;
 using Claims.Services.Channels;
@@ -7,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using Claims.Models.Channel;
+using Claims.Models.Cover;
 
 namespace Claims.Tests
 {

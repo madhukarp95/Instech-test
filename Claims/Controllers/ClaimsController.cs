@@ -1,9 +1,10 @@
-using Claims.Models;
 using Claims.Models.DTO;
 using Claims.Services.Claims;
 using Claims.Services.Coverage;
 using Claims.Services.Channels;
 using Microsoft.AspNetCore.Mvc;
+using Claims.Models.Cover;
+using Claims.Models.Channel;
 
 
 namespace Claims.Controllers;
@@ -45,22 +46,22 @@ public class ClaimsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(ClaimDto claimDto)
+    public async Task<ActionResult> CreateAsync(ClaimDto claimEntity)
     {
-        Cover? cover = await _coverService.GetCoverAsync(claimDto.CoverId);
+        Cover? cover = await _coverService.GetCoverAsync(claimEntity.CoverId);
 
         if (cover is null)
         {
-            _logger.LogWarning("Cover with ID {CoverId} not found.", claimDto.CoverId);
+            _logger.LogWarning("Cover with ID {CoverId} not found.", claimEntity.CoverId);
 
-            return NotFound($"Cover with ID {claimDto.CoverId} not found.");
+            return NotFound($"Cover with ID {claimEntity.CoverId} not found.");
         }
 
-        bool isValidClaim = claimDto.Created >= cover.StartDate && claimDto.Created <= cover.EndDate;
+        bool isValidClaim = claimEntity.Created >= cover.StartDate && claimEntity.Created <= cover.EndDate;
 
         if (isValidClaim)
         {
-            var claim = await _claimsService.AddItemAsync(claimDto);
+            var claim = await _claimsService.AddItemAsync(claimEntity);
             await _channel.EnqueueAsync(new ChannelRequest(claim.Id, "POST", "CLAIM"));
 
             return Ok(claim);

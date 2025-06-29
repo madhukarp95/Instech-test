@@ -1,5 +1,6 @@
 ﻿
 
+using Claims.Models.Cover;
 using System.ComponentModel.DataAnnotations;
 
 namespace Claims.Models.DTO

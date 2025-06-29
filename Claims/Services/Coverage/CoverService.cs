@@ -1,4 +1,4 @@
-﻿using Claims.Models;
+﻿using Claims.Models.Cover;
 using Claims.Models.DTO;
 using Claims.Persistance;
 using Claims.Services.PremiumCalculator;

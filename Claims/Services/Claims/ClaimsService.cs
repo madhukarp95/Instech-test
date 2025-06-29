@@ -1,4 +1,4 @@
-﻿using Claims.Models;
+﻿using Claims.Models.Claim;
 using Claims.Models.DTO;
 using Claims.Persistance;
 using Microsoft.EntityFrameworkCore;

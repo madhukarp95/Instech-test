@@ -1,8 +1,9 @@
-using Claims.Models;
 using Microsoft.AspNetCore.Mvc;
 using Claims.Services.Channels;
 using Claims.Models.DTO;
+using Claims.Models.Channel;
 using Claims.Services.Coverage;
+using Claims.Models.Cover;
 
 namespace Claims.Controllers;
 
@@ -24,11 +25,11 @@ public class CoversController : ControllerBase
     }
 
     [HttpPost("compute")]
-    public ActionResult ComputePremium(CoverDto coverDto)
+    public ActionResult ComputePremium(CoverDto coverEntity)
     {
         try
         {
-            decimal totalPremium = _coverService.ComputePremium(coverDto);
+            decimal totalPremium = _coverService.ComputePremium(coverEntity);
 
             return Ok(totalPremium);
         }
@@ -56,9 +57,9 @@ public class CoversController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(CoverDto coverDto)
+    public async Task<ActionResult> CreateAsync(CoverDto CoverEntity)
     {
-        var cover = await _coverService.AddItemAsync(coverDto);
+        var cover = await _coverService.AddItemAsync(CoverEntity);
 
         await _channel.EnqueueAsync(new ChannelRequest(cover.Id, "POST", "COVER"));
 

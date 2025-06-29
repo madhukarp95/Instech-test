@@ -1,4 +1,4 @@
-﻿using Claims.Models;
+﻿using Claims.Models.Channel;
 using System.Threading.Channels;
 
 namespace Claims.Services.Channels;

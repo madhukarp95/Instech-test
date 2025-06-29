@@ -1,4 +1,4 @@
-﻿using Claims.Models;
+﻿using Claims.Models.Cover;
 using Claims.Models.DTO;
 
 namespace Claims.Services.Coverage;

@@ -1,4 +1,4 @@
-﻿using Claims.Models;
+﻿using Claims.Models.Cover;
 
 namespace Claims.Services.PremiumCalculator
 {
