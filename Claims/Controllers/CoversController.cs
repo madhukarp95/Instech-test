@@ -40,7 +40,7 @@ public class CoversController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
+    public async Task<ActionResult> GetAsync()
     {
         var results = await _coverService.GetCoverAsync();
 
@@ -48,7 +48,7 @@ public class CoversController : ControllerBase
     }
 
     [HttpGet("{id:required}")]
-    public async Task<ActionResult<Cover>> GetAsync(string id)
+    public async Task<ActionResult> GetAsync(string id)
     {
         Cover? coverResponse = await _coverService.GetCoverAsync(id);
 
@@ -56,7 +56,7 @@ public class CoversController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<CoverDto>> CreateAsync(CoverDto coverDto)
+    public async Task<ActionResult> CreateAsync(CoverDto coverDto)
     {
         var cover = await _coverService.AddItemAsync(coverDto);
 
