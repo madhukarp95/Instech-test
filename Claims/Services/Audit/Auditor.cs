@@ -3,7 +3,7 @@ using Claims.Persistance;
 
 namespace Claims.Services.Audit
 {
-    public class Auditer : IAuditer
+    public class Auditor : IAuditor
     {
         private readonly AuditContext _auditContext;
 
@@ -11,7 +11,7 @@ namespace Claims.Services.Audit
         /// Initializes a new instance of the <see cref="Auditer"/> class.
         /// </summary>
         /// <param name="auditContext"></param>
-        public Auditer(AuditContext auditContext)
+        public Auditor(AuditContext auditContext)
         {
             _auditContext = auditContext;
         }

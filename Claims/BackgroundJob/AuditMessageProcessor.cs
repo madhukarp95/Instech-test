@@ -33,7 +33,7 @@ public class AuditMessageProcessor : BackgroundService
     }
 
     /// <summary>
-    /// xecute the background service to process messages from the channel.
+    /// Execute the background service to process messages from the channel.
     /// </summary>
     /// <param name="stoppingToken"></param>
     /// <returns></returns>
@@ -46,7 +46,7 @@ public class AuditMessageProcessor : BackgroundService
                 var request = await _channel.Reader.ReadAsync(stoppingToken);
 
                 using IServiceScope scope = _serviceScopeFactory.CreateScope();
-                IAuditer scopedService = scope.ServiceProvider.GetRequiredService<IAuditer>();
+                IAuditor scopedService = scope.ServiceProvider.GetRequiredService<IAuditor>();
 
                 if (request.type == "Claims")
                 {
@@ -57,14 +57,13 @@ public class AuditMessageProcessor : BackgroundService
                     await scopedService.AuditCover(request.Id, request.HttpRequestType);
                 }
 
-                _logger.LogInformation("Processing {RequestType} request with ID - {request.Id} for {CoverType} type.",
+                _logger.LogInformation("Processing {RequestType} request with ID - {Id} for {CoverType} type.",
                     request.HttpRequestType, request.Id, request.type);
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _logger.LogError(e, "Error in background service");
-            throw;
+            _logger.LogError(ex, "Error in background service");
         }
     }
 }

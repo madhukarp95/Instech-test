@@ -1,6 +1,6 @@
 ﻿namespace Claims.Services.Audit;
 
-public interface IAuditer
+public interface IAuditor
 {
     /// <summary>
     /// Audits a claim based on the provided claim identifier and HTTP request type.
