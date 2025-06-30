@@ -22,6 +22,8 @@ public static class DependencyInjectionExtensions
 
         builder.Services.ConfigureSwaggerServices();
 
+        builder.Services.AddCorsServices();
+
         // Add services to the container.
         builder.Services.AddControllers()
             .AddJsonOptions(x =>

@@ -13,6 +13,8 @@ app.UseExceptionHandler();
 
 app.ConfigureSwagger();
 
+app.ApplyCorsDefaultPolicy();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
