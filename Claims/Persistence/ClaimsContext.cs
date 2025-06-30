@@ -3,7 +3,7 @@ using Claims.Models.Cover;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.EntityFrameworkCore.Extensions;
 
-namespace Claims.Persistance
+namespace Claims.Persistence
 {
     public class ClaimsContext : DbContext
     {

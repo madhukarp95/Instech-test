@@ -1,7 +1,7 @@
 ﻿using Claims.Models.Channel;
 using Claims.Models.Cover;
 using Claims.Models.DTO;
-using Claims.Persistance;
+using Claims.Persistence;
 using Claims.Services.Channels;
 using Claims.Services.PremiumCalculator;
 using Microsoft.EntityFrameworkCore;

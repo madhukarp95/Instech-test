@@ -1,7 +1,7 @@
 ﻿using Claims.Models.Channel;
 using Claims.Models.Claim;
 using Claims.Models.DTO;
-using Claims.Persistance;
+using Claims.Persistence;
 using Claims.Services.Channels;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Channels;

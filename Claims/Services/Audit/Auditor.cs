@@ -1,5 +1,5 @@
 ﻿using Claims.Models.Auditing;
-using Claims.Persistance;
+using Claims.Persistence;
 
 namespace Claims.Services.Audit
 {
