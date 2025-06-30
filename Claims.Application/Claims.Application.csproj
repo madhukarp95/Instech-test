@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Dtos\" />
+    <Folder Include="RequestHandlers\CommandHandlers\" />
+    <Folder Include="RequestHandlers\QueryHandlers\" />
+    <Folder Include="Request\Queries\" />
+    <Folder Include="Request\Commands\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Claims.Domain\Claims.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
