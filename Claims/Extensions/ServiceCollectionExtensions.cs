@@ -7,7 +7,7 @@ using Claims.Services.PremiumCalculator;
 
 namespace Claims.Extensions;
 
-public static class ServiceExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Registers the dependent services for the Claims module.
