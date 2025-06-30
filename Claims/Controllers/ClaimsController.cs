@@ -1,16 +1,14 @@
 using Claims.Models.DTO;
 using Claims.Services.Claims;
 using Claims.Services.Coverage;
-using Claims.Services.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Claims.Models.Cover;
-using Claims.Models.Channel;
 
 
 namespace Claims.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status204NoContent)]
 public class ClaimsController : ControllerBase
