@@ -45,7 +45,7 @@ public class CoverService : ICoverService
         await _claimsContext.Covers.AddAsync(cover);
         await _claimsContext.SaveChangesAsync();
 
-        await _channel.EnqueueAsync(new ChannelRequest(cover.Id, "POST", "COVER"));
+        await _channel.EnqueueAsync(new ChannelRequest(cover.Id, Constants.HttpPost, Constants.CoverType));
 
         return cover;
     }
@@ -67,7 +67,7 @@ public class CoverService : ICoverService
             _claimsContext.Covers.Remove(cover);
             await _claimsContext.SaveChangesAsync();
 
-            await _channel.EnqueueAsync(new ChannelRequest(id, "DELETE", "COVER"));
+            await _channel.EnqueueAsync(new ChannelRequest(id, Constants.HttpDelete, Constants.CoverType));
         }
     }
 

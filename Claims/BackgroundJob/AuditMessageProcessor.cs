@@ -48,11 +48,11 @@ public class AuditMessageProcessor : BackgroundService
                 using IServiceScope scope = _serviceScopeFactory.CreateScope();
                 IAuditor scopedService = scope.ServiceProvider.GetRequiredService<IAuditor>();
 
-                if (request.type == "Claims")
+                if (request.type == Constants.ClaimType)
                 {
                     await scopedService.AuditClaim(request.Id, request.HttpRequestType);
                 }
-                else if (request.type == "Covers")
+                else if (request.type == Constants.CoverType)
                 {
                     await scopedService.AuditCover(request.Id, request.HttpRequestType);
                 }

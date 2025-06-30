@@ -52,7 +52,7 @@ public class ClaimsService : IClaimsService
         await _claimsContext.Claims.AddAsync(claim);
         await _claimsContext.SaveChangesAsync();
 
-        await _channel.EnqueueAsync(new ChannelRequest(claim.Id, "POST", "CLAIM"));
+        await _channel.EnqueueAsync(new ChannelRequest(claim.Id, Constants.HttpPost, Constants.ClaimType));
 
         return claim;
     }
@@ -66,7 +66,7 @@ public class ClaimsService : IClaimsService
             _claimsContext.Claims.Remove(claim);
             await _claimsContext.SaveChangesAsync();
 
-            await _channel.EnqueueAsync(new ChannelRequest(id, "DELETE", "CLAIM"));
+            await _channel.EnqueueAsync(new ChannelRequest(id, Constants.HttpDelete, Constants.ClaimType));
         }
     }
 }
