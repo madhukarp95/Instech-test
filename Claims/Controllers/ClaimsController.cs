@@ -18,15 +18,13 @@ public class ClaimsController : ControllerBase
     private readonly ILogger<ClaimsController> _logger;
     private readonly IClaimsService _claimsService;
     private readonly ICoverService _coverService;
-    private readonly IChannelQueue _channel;
 
     public ClaimsController(ILogger<ClaimsController> logger, IClaimsService claimsService,
-        ICoverService coverService, IChannelQueue channel)
+        ICoverService coverService)
     {
         _logger = logger;
         _claimsService = claimsService;
         _coverService = coverService;
-        _channel = channel;
     }
 
     [HttpGet]
@@ -62,7 +60,6 @@ public class ClaimsController : ControllerBase
         if (isValidClaim)
         {
             var claim = await _claimsService.AddItemAsync(claimEntity);
-            await _channel.EnqueueAsync(new ChannelRequest(claim.Id, "POST", "CLAIM"));
 
             return Ok(claim);
         }
@@ -73,7 +70,6 @@ public class ClaimsController : ControllerBase
     [HttpDelete("{id:required}")]
     public async Task DeleteAsync(string id)
     {
-        await _channel.EnqueueAsync(new ChannelRequest(id, "DELETE", "CLAIM"));
         await _claimsService.DeleteItemAsync(id);
     }
 }

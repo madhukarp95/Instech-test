@@ -8,11 +8,9 @@ public class Cover
     public required string Id { get; set; }
 
     [BsonElement("startDate")]
-    //[BsonDateTimeOptions(DateOnly = true)]
     public DateOnly StartDate { get; set; }
 
     [BsonElement("endDate")]
-    //[BsonDateTimeOptions(DateOnly = true)]
     public DateOnly EndDate { get; set; }
 
     [BsonElement("claimType")]

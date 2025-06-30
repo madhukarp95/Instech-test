@@ -17,15 +17,13 @@ public class CoversControllerTests
 {
     private readonly Mock<ILogger<CoversController>> _logger;
     private readonly Mock<ICoverService> _coverService;
-    private readonly Mock<IChannelQueue> _channel;
     private readonly CoversController _coversController;
 
     public CoversControllerTests()
     {
         _logger = new Mock<ILogger<CoversController>>();
         _coverService = new Mock<ICoverService>();
-        _channel = new Mock<IChannelQueue>();
-        _coversController = new CoversController(_coverService.Object, _channel.Object, _logger.Object);
+        _coversController = new CoversController(_coverService.Object, _logger.Object);
     }
 
     [Fact]
@@ -159,7 +157,6 @@ public class CoversControllerTests
     {
         // Arrange
         var id = "1";
-        _channel.Setup(s => s.EnqueueAsync(It.IsAny<ChannelRequest>())).Returns(ValueTask.CompletedTask).Verifiable();
         _coverService.Setup(s => s.DeleteItemAsync(id)).Returns(Task.CompletedTask).Verifiable();
 
         // Act
@@ -167,7 +164,6 @@ public class CoversControllerTests
 
         // Assert
         Assert.IsType<NoContentResult>(result);
-        _channel.Verify(s => s.EnqueueAsync(It.Is<ChannelRequest>(r => r.Id == id && r.HttpRequestType == "DELETE" && r.type == "COVER")), Times.Once);
         _coverService.Verify(s => s.DeleteItemAsync(id), Times.Once);
     }
 }

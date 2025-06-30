@@ -11,17 +11,16 @@ namespace Claims.Controllers;
 [Route("[controller]")]
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status204NoContent)]
+[ProducesResponseType<decimal>(StatusCodes.Status200OK)]
 public class CoversController : ControllerBase
 {
     private readonly ICoverService _coverService;
     private readonly ILogger<CoversController> _logger;
-    private readonly IChannelQueue _channel;
 
-    public CoversController(ICoverService coverService, IChannelQueue channel, ILogger<CoversController> logger)
+    public CoversController(ICoverService coverService, ILogger<CoversController> logger)
     {
         _coverService = coverService;
         _logger = logger;
-        _channel = channel;
     }
 
     [HttpPost("compute")]
@@ -61,16 +60,12 @@ public class CoversController : ControllerBase
     {
         var cover = await _coverService.AddItemAsync(CoverEntity);
 
-        await _channel.EnqueueAsync(new ChannelRequest(cover.Id, "POST", "COVER"));
-
         return Ok(cover);
     }
 
     [HttpDelete("{id:required}")]
     public async Task<ActionResult> DeleteAsync(string id)
     {
-        await _channel.EnqueueAsync(new ChannelRequest(id, "DELETE", "COVER"));
-
         await _coverService.DeleteItemAsync(id);
         return NoContent();
     }

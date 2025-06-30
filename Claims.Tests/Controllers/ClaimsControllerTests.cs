@@ -21,7 +21,6 @@ public class ClaimsControllerTests
     private readonly Mock<ILogger<ClaimsController>> _logger;
     private readonly Mock<IClaimsService> _claimsService;
     private readonly Mock<ICoverService> _coverService;
-    private readonly Mock<IChannelQueue> _channel;
     private readonly ClaimsController _claimsController;
 
     public ClaimsControllerTests()
@@ -29,13 +28,11 @@ public class ClaimsControllerTests
         _logger = new Mock<ILogger<ClaimsController>>();
         _claimsService = new Mock<IClaimsService>();
         _coverService = new Mock<ICoverService>();
-        _channel = new Mock<IChannelQueue>();
 
         _claimsController = new ClaimsController(
             _logger.Object,
             _claimsService.Object,
-            _coverService.Object,
-            _channel.Object
+            _coverService.Object
         );
     }
 
@@ -174,7 +171,6 @@ public class ClaimsControllerTests
 
         _coverService.Setup(s => s.GetCoverAsync(claimDto.CoverId)).ReturnsAsync(cover);
         _claimsService.Setup(s => s.AddItemAsync(claimDto)).ReturnsAsync(claim);
-        _channel.Setup(s => s.EnqueueAsync(It.IsAny<ChannelRequest>())).Returns(ValueTask.CompletedTask);
 
         // Act
         var result = await _claimsController.CreateAsync(claimDto);
@@ -189,14 +185,12 @@ public class ClaimsControllerTests
     {
         // Arrange
         var id = "cl1";
-        _channel.Setup(s => s.EnqueueAsync(It.IsAny<ChannelRequest>())).Returns(ValueTask.CompletedTask).Verifiable();
         _claimsService.Setup(s => s.DeleteItemAsync(id)).Returns(Task.CompletedTask).Verifiable();
 
         // Act
         await _claimsController.DeleteAsync(id);
 
         // Assert
-        _channel.Verify(s => s.EnqueueAsync(It.Is<ChannelRequest>(r => r.Id == id && r.HttpRequestType == "DELETE" && r.type == "CLAIM")), Times.Once);
         _claimsService.Verify(s => s.DeleteItemAsync(id), Times.Once);
     }
 

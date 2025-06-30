@@ -35,7 +35,7 @@ public interface ICoverService
     /// <summary>
     /// Computes the premium for a given cover based on the provided cover data.
     /// </summary>
-    /// <param name="coverDto"></param>
+    /// <param name="item"></param>
     /// <returns></returns>
-    decimal ComputePremium(CoverDto coverDto);
+    decimal ComputePremium(CoverDto item);
 }

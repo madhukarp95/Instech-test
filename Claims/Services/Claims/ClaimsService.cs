@@ -1,21 +1,27 @@
-﻿using Claims.Models.Claim;
+﻿using Claims.Models.Channel;
+using Claims.Models.Claim;
 using Claims.Models.DTO;
 using Claims.Persistance;
+using Claims.Services.Channels;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Channels;
 
 namespace Claims.Services.Claims;
 
 public class ClaimsService : IClaimsService
 {
     private readonly ClaimsContext _claimsContext;
+    private readonly IChannelQueue _channel;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ClaimsService"/> class.
     /// </summary>
     /// <param name="claimsContext"></param>
-    public ClaimsService(ClaimsContext claimsContext)
+    /// <param name="channel"></param>
+    public ClaimsService(ClaimsContext claimsContext, IChannelQueue channel)
     {
         _claimsContext = claimsContext;
+        _channel = channel;
     }
 
     // </inheritdoc>
@@ -31,20 +37,22 @@ public class ClaimsService : IClaimsService
     }
 
     // </inheritdoc>
-    public async Task<Claim> AddItemAsync(ClaimDto model)
+    public async Task<Claim> AddItemAsync(ClaimDto item)
     {
         Claim claim = new()
         {
             Id = Guid.NewGuid().ToString(),
-            CoverId = model.CoverId,
-            Name = model.Name,
-            Created = model.Created!.Value,
-            DamageCost = model.DamageCost,
-            Type = model.Type
+            CoverId = item.CoverId,
+            Name = item.Name,
+            Created = item.Created!.Value,
+            DamageCost = item.DamageCost,
+            Type = item.Type
         };
 
         await _claimsContext.Claims.AddAsync(claim);
         await _claimsContext.SaveChangesAsync();
+
+        await _channel.EnqueueAsync(new ChannelRequest(claim.Id, "POST", "CLAIM"));
 
         return claim;
     }
@@ -57,6 +65,8 @@ public class ClaimsService : IClaimsService
         {
             _claimsContext.Claims.Remove(claim);
             await _claimsContext.SaveChangesAsync();
+
+            await _channel.EnqueueAsync(new ChannelRequest(id, "DELETE", "CLAIM"));
         }
     }
 }
