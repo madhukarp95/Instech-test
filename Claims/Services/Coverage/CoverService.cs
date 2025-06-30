@@ -74,12 +74,12 @@ public class CoverService : ICoverService
     // </inheritdoc>
     public async Task<Cover?> GetCoverAsync(string id)
     {
-        return await _claimsContext.Covers.SingleOrDefaultAsync(cover => cover.Id == id);
+        return await _claimsContext.Covers.AsNoTracking().SingleOrDefaultAsync(cover => cover.Id == id);
     }
 
     // </inheritdoc>
     public async Task<IEnumerable<Cover>> GetCoverAsync()
     {
-        return await _claimsContext.Covers.ToListAsync();
+        return await _claimsContext.Covers.AsNoTracking().ToListAsync();
     }
 }

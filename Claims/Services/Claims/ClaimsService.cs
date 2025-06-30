@@ -27,13 +27,13 @@ public class ClaimsService : IClaimsService
     // </inheritdoc>
     public async Task<IEnumerable<Claim>> GetClaimsAsync()
     {
-        return await _claimsContext.Claims.ToListAsync();
+        return await _claimsContext.Claims.AsNoTracking().ToListAsync();
     }
 
     // </inheritdoc>
     public async Task<Claim?> GetClaimAsync(string id)
     {
-        return await _claimsContext.Claims.SingleOrDefaultAsync(claim => claim.Id == id);
+        return await _claimsContext.Claims.AsNoTracking().SingleOrDefaultAsync(claim => claim.Id == id);
     }
 
     // </inheritdoc>
